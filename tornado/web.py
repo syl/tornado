@@ -121,8 +121,8 @@ class RequestHandler(object):
     def clear(self):
         """Resets all headers and content for this response."""
         self._headers = {
-            "Server": "TornadoServer/0.1",
-            "Content-Type": "text/html; charset=UTF-8",
+            "Server": "TornadoWAP/0.01",
+            "Content-Type": "text/vnd.wap.wml",
         }
         if not self.request.supports_http_1_1():
             if self.request.headers.get("Connection") == "Keep-Alive":
@@ -480,11 +480,16 @@ class RequestHandler(object):
 
     def get_error_html(self, status_code):
         """Override to implement custom error pages."""
-        return "<html><title>%(code)d: %(message)s</title>" \
-               "<body>%(code)d: %(message)s</body></html>" % {
-            "code": status_code,
-            "message": httplib.responses[status_code],
-        }
+	return "<?xml version="1.0"?>" \
+	       "<!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\" \"http://wap.wapforum.org/DTD/wml_1.1.xml\">" \
+	       "<wml>" \
+	       " <card id=\"Card1\" title=\"An error occured.\">" \
+	       "  <p>" \
+	       "  %(code)d: %(message)s" \
+	       "  </p>" \
+	       " </card>" \
+	       "</wml>" \
+	       % { "code": status_code, "message": httplib.responses[status_code], }
 
     @property
     def locale(self):
